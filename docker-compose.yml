@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+  titevad_wordpress:
+    depends_on:
+      - titevad_db
+    image: wordpress
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: ${TITEVAD_WORDPRESS_DB_HOST}
+      WORDPRESS_DB_NAME: ${TITEVAD_WORDPRESS_DB_NAME}
+      WORDPRESS_DB_USER: ${TITEVAD_WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${TITEVAD_WORDPRESS_DB_PASSWORD}
+    volumes:
+      - /var/titevad_wordpress:/var/www/html
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.http.routers.me.rule=Host(`titevad.418.ovh`)"
+        - "traefik.docker.network=shared-proxy"
+        - "traefik.http.routers.me.tls=true"
+        - "traefik.http.routers.me.tls.certresolver=mytlschallenge"
+        - "traefik.http.services.me.loadbalancer.server.port=80" # it seems you always need to give traefik a port so it 'notices' the service
+    networks:
+      - shared-proxy
+
+  titevad_db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${TITEVAD_WORDPRESS_DB_NAME}
+      MYSQL_USER: ${TITEVAD_WORDPRESS_DB_USER}
+      MYSQL_PASSWORD: ${TITEVAD_WORDPRESS_DB_PASSWORD}
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - /var/titevad_db:/var/lib/mysql
+    networks:
+      - shared-proxy
+
+networks:
+  shared-proxy:
+    external: true
