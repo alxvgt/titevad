@@ -16,7 +16,7 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.me.rule=Host(`titevad.418.ovh`)"
+        - "traefik.http.routers.me.rule=Host(`titévad.fr`)"
         - "traefik.docker.network=shared-proxy"
         - "traefik.http.routers.me.tls=true"
         - "traefik.http.routers.me.tls.certresolver=mytlschallenge"
