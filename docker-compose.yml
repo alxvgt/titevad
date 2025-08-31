@@ -16,11 +16,14 @@ services:
     deploy:
       labels:
         - "traefik.enable=true"
-        - "traefik.http.routers.me.rule=Host(`titévad.fr`)"
+        - "traefik.http.routers.titevad.rule=Host(`www.xn--titvad-dva.fr`, `titevad.418.ovh`)"
         - "traefik.docker.network=shared-proxy"
-        - "traefik.http.routers.me.tls=true"
-        - "traefik.http.routers.me.tls.certresolver=mytlschallenge"
-        - "traefik.http.services.me.loadbalancer.server.port=80" # it seems you always need to give traefik a port so it 'notices' the service
+        - "traefik.http.routers.titevad.tls=true"
+        - "traefik.http.routers.titevad.tls.certresolver=mytlschallenge"
+        - "traefik.http.routers.titevad.middlewares=titevad-redirectregex@docker"
+        - "traefik.http.services.titevad.loadbalancer.server.port=80" # it seems you always need to give traefik a port so it 'notices' the service
+        - "traefik.http.middlewares.titevad-redirectregex.redirectregex.regex=^(http|https)://titevad.418.ovh/(.*)"
+        - "traefik.http.middlewares.titevad-redirectregex.redirectregex.replacement=https://www.xn--titvad-dva.fr/$${1}"
     networks:
       - shared-proxy
 
